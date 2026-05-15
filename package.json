@@ -1,0 +1,13 @@
+{
+  "name": "my-nest-hex-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "bin": {
+    "my-hex": "./index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

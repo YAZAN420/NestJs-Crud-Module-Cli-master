@@ -1,0 +1,118 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Create__ClassName__Dto } from './dto/create-__singularName__.dto';
+import { Update__ClassName__Dto } from './dto/update-__singularName__.dto';
+import { PrismaService } from 'src/core/database/prisma/prisma.service';
+import { __ClassName__ } from 'src/generated/prisma/client';
+import {
+  CursorPageDto,
+  CursorPageMetaDto,
+  CursorPageOptionsDto,
+  PageDto,
+  PageMetaDto,
+  PageOptionsDto,
+} from 'src/common/dtos/pagination';
+import { WithRealtionsDto } from 'src/common/dtos/with-realtions.dto';
+import type { Prisma } from 'src/generated/prisma/client';
+@Injectable()
+export class __ModuleClassName__Service {
+  constructor(private readonly prisma: PrismaService) {}
+
+  private buildInclude(
+    withRelations?: string[],
+  ): Prisma.__ClassName__Include | undefined {
+    if (!withRelations || withRelations.length === 0) {
+      return undefined;
+    }
+
+    return withRelations.reduce((acc, relation) => {
+      acc[relation] = true;
+      return acc;
+    }, {} as Prisma.__ClassName__Include);
+  }
+
+  async create(
+    create__ClassName__Dto: Create__ClassName__Dto,
+  ): Promise<__ClassName__> {
+    return this.prisma.__singularName__.create({
+      data: create__ClassName__Dto,
+    });
+  }
+
+  async findAll(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<__ClassName__>> {
+    const include = this.buildInclude(pageOptionsDto.with);
+    const [__moduleName__, itemCount] = await Promise.all([
+      this.prisma.__singularName__.findMany({
+        skip: pageOptionsDto.skip,
+        take: pageOptionsDto.take,
+        include,
+      }),
+      this.prisma.__singularName__.count(),
+    ]);
+    const pageMetaDto = new PageMetaDto({
+      itemCount,
+      pageOptionsDto: pageOptionsDto,
+    });
+    return new PageDto(__moduleName__, pageMetaDto);
+  }
+
+  async findAllCursor(
+    cursorOptionsDto: CursorPageOptionsDto,
+  ): Promise<CursorPageDto<__ClassName__>> {
+    const include = this.buildInclude(cursorOptionsDto.with);
+    const { cursor, take } = cursorOptionsDto;
+    const items = await this.prisma.__singularName__.findMany({
+      take: take + 1,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: Number(cursor) } : undefined,
+      orderBy: { id: 'desc' },
+      include,
+    });
+
+    const hasNextPage = items.length > take;
+    if (hasNextPage) items.pop();
+
+    const endCursor =
+      items.length > 0 ? String(items[items.length - 1].id) : null;
+    const meta = new CursorPageMetaDto(hasNextPage, endCursor);
+
+    return new CursorPageDto(items, meta);
+  }
+
+  async findOne(
+    id: number,
+    options?: WithRealtionsDto,
+  ): Promise<__ClassName__> {
+    const include = this.buildInclude(options?.with);
+    const __singularName__ = await this.prisma.__singularName__.findUnique({
+      where: { id },
+      include,
+    });
+
+    if (!__singularName__) {
+      throw new NotFoundException(`__ClassName__ with ID ${id} not found`);
+    }
+
+    return __singularName__;
+  }
+
+  async update(
+    id: number,
+    update__ClassName__Dto: Update__ClassName__Dto,
+  ): Promise<__ClassName__> {
+    await this.findOne(id);
+
+    return this.prisma.__singularName__.update({
+      where: { id },
+      data: update__ClassName__Dto,
+    });
+  }
+
+  async remove(id: number): Promise<__ClassName__> {
+    await this.findOne(id);
+    return this.prisma.__singularName__.delete({
+      where: { id },
+    });
+  }
+}
