@@ -4,7 +4,9 @@ const path = require('path');
 
 const moduleName = process.argv[2];
 if (!moduleName) {
-  console.error('Error: Please provide a module name! (e.g., my-hex products)');
+  console.error(
+    'Error: Please provide a module name! (e.g., my-crud products)',
+  );
   process.exit(1);
 }
 
@@ -19,7 +21,7 @@ const ModuleClassName = capitalize(moduleName);
 const templatesDir = path.join(__dirname, 'templates');
 const targetDir = path.join(process.cwd(), 'src', moduleName);
 
-console.log(`Generating Hexagonal module: ${moduleName}...`);
+console.log(`Generating CRUD module: ${moduleName}...`);
 
 const requiredFolders = [];
 
@@ -72,8 +74,8 @@ const appModulePath = path.join(process.cwd(), 'src', 'app.module.ts');
 if (fs.existsSync(appModulePath)) {
   let appContent = fs.readFileSync(appModulePath, 'utf8');
 
-  if (!appContent.includes(`${ModuleClassName}Module.withInfrastructure`)) {
-    const importsToAdd = `import { ${ModuleClassName}Module } from './${moduleName}/${moduleName}.module';\nimport { ${ModuleClassName}InfrastructureModule } from './${moduleName}/infrastructure/${moduleName}-infrastructure.module';\n`;
+  if (!appContent.includes(`${ModuleClassName}Module`)) {
+    const importsToAdd = `import { ${ModuleClassName}Module } from './${moduleName}/${moduleName}.module';`;
 
     const lastImportMatch = [...appContent.matchAll(/^import .*;/gm)].pop();
     const insertPos = lastImportMatch
@@ -109,7 +111,7 @@ if (fs.existsSync(appModulePath)) {
         }
 
         if (closePos !== -1) {
-          const injectionCode = `\n        ${ModuleClassName}Module.withInfrastructure(\n          ${ModuleClassName}InfrastructureModule.use(options.driver),\n        ),`;
+          const injectionCode = `\n        ${ModuleClassName}Module`;
           appContent =
             appContent.slice(0, closePos) +
             injectionCode +
