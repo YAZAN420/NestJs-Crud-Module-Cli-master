@@ -122,9 +122,6 @@ if (fs.existsSync(appModulePath)) {
     }
 
     fs.writeFileSync(appModulePath, appContent, 'utf8');
-    console.log(
-      `✅ Injected ${ModuleClassName} dynamically into app.module.ts!`,
-    );
   } else {
     console.log(
       `⚠️ ${ModuleClassName} is already in app.module.ts. Skipped injection.`,
