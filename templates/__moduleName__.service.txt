@@ -13,19 +13,26 @@ import {
 } from 'src/common/dtos/pagination';
 import { WithRealtionsDto } from 'src/common/dtos/with-realtions.dto';
 import type { Prisma } from 'src/generated/prisma/client';
+type __ClassName__Relation = keyof Prisma.__ClassName__Include;
 @Injectable()
 export class __ModuleClassName__Service {
   constructor(private readonly prisma: PrismaService) {}
+  private readonly allowedRelations: __ClassName__Relation[] = [];
 
   private buildInclude(
     withRelations?: string[],
   ): Prisma.__ClassName__Include | undefined {
-    if (!withRelations || withRelations.length === 0) {
+    if (!withRelations?.length) {
       return undefined;
     }
 
     return withRelations.reduce((acc, relation) => {
-      acc[relation] = true;
+      if (
+        this.allowedRelations.includes(relation as keyof Prisma.__ClassName__Include)
+      ) {
+        acc[relation as keyof Prisma.__ClassName__Include] = true;
+      }
+
       return acc;
     }, {} as Prisma.__ClassName__Include);
   }
