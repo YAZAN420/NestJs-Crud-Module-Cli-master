@@ -88,9 +88,9 @@ if (fs.existsSync(appModulePath)) {
       importsToAdd +
       appContent.slice(insertPos);
 
-    const registerStart = appContent.indexOf('static register');
-    if (registerStart !== -1) {
-      const importsArrayStart = appContent.indexOf('imports: [', registerStart);
+    const moduleStart = appContent.indexOf('@Module(');
+    if (moduleStart !== -1) {
+      const importsArrayStart = appContent.indexOf('imports: [', moduleStart);
 
       if (importsArrayStart !== -1) {
         let brackets = 0;
@@ -111,11 +111,17 @@ if (fs.existsSync(appModulePath)) {
         }
 
         if (closePos !== -1) {
-          const injectionCode = `\n        ${ModuleClassName}Module`;
+          const textBeforeClose = appContent
+            .slice(importsArrayStart + 'imports: ['.length, closePos)
+            .trim();
+          const needsComma =
+            textBeforeClose.length > 0 && !textBeforeClose.endsWith(',');
+
+          const injectionCode = `${needsComma ? ',' : ''}\n    ${ModuleClassName}Module,`;
           appContent =
             appContent.slice(0, closePos) +
             injectionCode +
-            '\n      ' +
+            '\n  ' +
             appContent.slice(closePos);
         }
       }
