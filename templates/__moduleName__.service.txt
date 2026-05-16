@@ -19,24 +19,6 @@ export class __ModuleClassName__Service {
   constructor(private readonly prisma: PrismaService) {}
   private readonly allowedRelations: __ClassName__Relation[] = [];
 
-  private buildInclude(
-    withRelations?: string[],
-  ): Prisma.__ClassName__Include | undefined {
-    if (!withRelations?.length) {
-      return undefined;
-    }
-
-    return withRelations.reduce((acc, relation) => {
-      if (
-        this.allowedRelations.includes(relation as keyof Prisma.__ClassName__Include)
-      ) {
-        acc[relation as keyof Prisma.__ClassName__Include] = true;
-      }
-
-      return acc;
-    }, {} as Prisma.__ClassName__Include);
-  }
-
   async create(
     create__ClassName__Dto: Create__ClassName__Dto,
   ): Promise<__ClassName__> {
