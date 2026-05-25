@@ -30,7 +30,10 @@ export class __ModuleClassName__Controller {
 
   @Post()
   create(@Body() create__ClassName__Dto: Create__ClassName__Dto) {
-    return this.__moduleName__Service.create(create__ClassName__Dto);
+    return {
+      message: '__ClassName__ created successfully';
+      data: this.__moduleName__Service.create(create__ClassName__Dto);
+    }
   }
 
   @Get()
